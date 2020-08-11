@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -136,6 +137,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     //add the address into List View
                     MainActivity.arrayAdapter.notifyDataSetChanged();
+
+                    //add the new array into the shared preference
+                    SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("com.example.memorableplace", Context.MODE_PRIVATE);
+                    sharedPreferences.edit().putString("addresses",ObjectSerializer.serialize(MainActivity.addresses)).apply();
+                    ArrayList<String> latitudes = new ArrayList<String>();
+                    ArrayList<String> longitudes = new ArrayList<String>();
+                    for (LatLng coord: MainActivity.points) {
+                        latitudes.add(Double.toString(coord.latitude));
+                        longitudes.add(Double.toString((coord.longitude)));
+                    }
+                    sharedPreferences.edit().putString("lat",ObjectSerializer.serialize(latitudes)).apply();
+                    sharedPreferences.edit().putString("lng",ObjectSerializer.serialize(longitudes)).apply();
 
                     //toast the message
                     Toast.makeText(MapsActivity.this, "New location added.", Toast.LENGTH_SHORT).show();
